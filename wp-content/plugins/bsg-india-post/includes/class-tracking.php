@@ -136,6 +136,7 @@ class BSG_IP_Tracking {
         foreach ($ids as $id) {
             $o = wc_get_order($id);
             if (!$o) continue;
+            if ($o->get_meta('_bsg_ip_manual')) continue; // typed in by hand: not booked through the API, so the API cannot track it
             $code = $o->get_meta('_bsg_ip_barcode');
             $map[$code] = $o;
             $byCustomer[(string) $o->get_meta('_bsg_ip_customer')][] = $code;
@@ -152,6 +153,9 @@ class BSG_IP_Tracking {
         $code = $order->get_meta('_bsg_ip_barcode');
         if (!$code) {
             return array(false, 'Not booked yet.');
+        }
+        if ($order->get_meta('_bsg_ip_manual')) {
+            return array(false, 'This number was added by hand, so the API cannot track it. Check it on the India Post website.');
         }
         $n = self::sync(array($code), array($code => $order), (string) $order->get_meta('_bsg_ip_customer'));
         return array(true, $n . ' new tracking event(s).');
@@ -304,7 +308,11 @@ class BSG_IP_Tracking {
             }
             echo '</ol>';
         } else {
-            echo '<p class="bsg-ship-wait">Your parcel is booked. Tracking updates appear here as it moves.</p>';
+            if ($order->get_meta('_bsg_ip_manual')) {
+                echo '<p class="bsg-ship-wait">Your parcel has been handed to India Post. You can follow it with the number above on the India Post website (Track N Trace).</p>';
+            } else {
+                echo '<p class="bsg-ship-wait">Your parcel is booked. Tracking updates appear here as it moves.</p>';
+            }
         }
         echo '</section>';
     }

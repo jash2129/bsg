@@ -16,6 +16,7 @@ class BSG_IP_Admin {
         add_action('woocommerce_order_action_bsg_ip_track', array(__CLASS__, 'do_track'));
         add_action('woocommerce_order_action_bsg_ip_label', array(__CLASS__, 'do_label'));
         add_action('admin_post_bsg_ip_get_label', array(__CLASS__, 'download_label'));
+        add_action('woocommerce_process_shop_order_meta', array(__CLASS__, 'save_manual'), 20, 1);
         add_action('wp_enqueue_scripts', array(__CLASS__, 'front_css'));
         add_action('admin_notices', array(__CLASS__, 'low_barcodes'));
     }
@@ -29,14 +30,24 @@ class BSG_IP_Admin {
         $order = $post_or_order instanceof WC_Order ? $post_or_order : wc_get_order($post_or_order->ID);
         if (!$order) return;
         $code = $order->get_meta('_bsg_ip_barcode');
-        if (!BSG_IP_Settings::is_ready() && !$code) {
-            echo '<p>India Post is not set up yet. <a href="' . esc_url(admin_url('admin.php?page=bsg-india-post')) . '">Open settings</a></p>';
+        if (!$code) {
+            // Ship by hand: type the number from the post-office receipt, then press Update.
+            wp_nonce_field('bsg_ip_manual_' . $order->get_id(), 'bsg_ip_manual_nonce');
+            echo '<p><label for="bsg_ip_manual_code"><strong>Tracking number</strong> (from your post-office receipt)</label>';
+            echo '<input type="text" id="bsg_ip_manual_code" name="bsg_ip_manual_code" class="widefat" maxlength="13" placeholder="e.g. EE123456789IN" autocomplete="off" style="text-transform:uppercase"></p>';
+            echo '<p><label><input type="checkbox" name="bsg_ip_manual_complete" value="1" checked> Also mark the order Completed</label></p>';
+            echo '<p class="description">Press <em>Update</em>. The customer is emailed the number and can follow it on the Track your order page.</p>';
+            if (BSG_IP_Settings::is_ready()) {
+                $p = BSG_IP_Booking::parcel($order);
+                echo '<hr><p class="description">Or book through India Post: parcel estimate <strong>' . (int) $p['weight_g'] . ' g</strong>, ' . (int) $p['l'] . '×' . (int) $p['w'] . '×' . (int) $p['h'] . ' cm. Use <em>Order actions</em> &gt; "Book with India Post".</p>';
+            } else {
+                echo '<hr><p class="description">India Post booking from the site is not set up. <a href="' . esc_url(admin_url('admin.php?page=bsg-india-post')) . '">Open settings</a></p>';
+            }
             return;
         }
-        if (!$code) {
-            $p = BSG_IP_Booking::parcel($order);
-            echo '<p>Not booked. Parcel estimate: <strong>' . (int) $p['weight_g'] . ' g</strong>, ' . (int) $p['l'] . '×' . (int) $p['w'] . '×' . (int) $p['h'] . ' cm.</p>';
-            echo '<p class="description">Use the <em>Order actions</em> box: "Book with India Post".</p>';
+        if ($order->get_meta('_bsg_ip_manual')) {
+            echo '<p><strong>' . esc_html($code) . '</strong><br>Added by hand.</p>';
+            echo '<p class="description">India Post\'s API only tracks parcels booked through it. Check this number on the India Post website.</p>';
             return;
         }
         $labels = BSG_IP_Tracking::states();
@@ -58,6 +69,37 @@ class BSG_IP_Admin {
                 echo '<li>' . esc_html($e['description'] ?? '') . ' <span class="description">' . esc_html($e['when'] ?? '') . '</span></li>';
             }
             echo '</ul>';
+        }
+    }
+
+    /** Saves a tracking number typed into the box (runs when the order is updated). */
+    public static function save_manual($order_id) {
+        if (empty($_POST['bsg_ip_manual_code'])) {
+            return;
+        }
+        $order_id = (int) $order_id;
+        if (!isset($_POST['bsg_ip_manual_nonce']) || !wp_verify_nonce(wp_unslash($_POST['bsg_ip_manual_nonce']), 'bsg_ip_manual_' . $order_id)
+            || !current_user_can('edit_shop_orders')) {
+            return;
+        }
+        $order = wc_get_order($order_id);
+        if (!$order || $order->get_meta('_bsg_ip_barcode')) {
+            return;
+        }
+        $code = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', wp_unslash($_POST['bsg_ip_manual_code'])));
+        if (!BSG_IP_Barcode::is_valid($code)) {
+            $order->add_order_note('Tracking number "' . esc_html($code) . '" was not saved. It must be 13 characters like EE123456789IN, so please check it against the receipt.');
+            return;
+        }
+        $order->update_meta_data('_bsg_ip_barcode', $code);
+        $order->update_meta_data('_bsg_ip_state', 'in_transit');
+        $order->update_meta_data('_bsg_ip_manual', 1);
+        $order->update_meta_data('_bsg_ip_events', array());
+        $order->save();
+        $order->add_order_note('Shipped with India Post by hand. Tracking number ' . $code . '.');
+        BSG_IP_Track_Page::notify_shipped($order);
+        if (!empty($_POST['bsg_ip_manual_complete']) && !in_array($order->get_status(), array('completed', 'cancelled', 'refunded'), true)) {
+            $order->update_status('completed', 'Marked completed when the tracking number was added.');
         }
     }
 
