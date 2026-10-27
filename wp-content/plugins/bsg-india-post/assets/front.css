@@ -1,0 +1,86 @@
+/* Shipment card on the order page. Uses the BSG theme tokens when present, with plain fallbacks. */
+.bsg-ship {
+  margin: 24px 0;
+  padding: 18px;
+  border: 1px solid var(--bsg-border-sand, #e5e5e5);
+  border-radius: 16px;
+  background: var(--bsg-card-white, #fff);
+  color: var(--bsg-text-charcoal, #111);
+}
+.bsg-ship-title { margin: 0 0 10px; font-size: 18px; }
+.bsg-ship-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 12px; }
+.bsg-ship-state {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-size: 13px;
+  font-weight: 700;
+}
+.bsg-ship-state--delivered { color: var(--bsg-success, #2e7d32); }
+.bsg-ship-state--out_for_delivery { color: var(--bsg-accent-terracotta, #e1261c); }
+.bsg-ship-state--returning, .bsg-ship-state--returned, .bsg-ship-state--on_hold { color: #b45309; }
+.bsg-ship-code { font-size: 13px; color: var(--bsg-text-secondary, #6b6b6b); letter-spacing: 0.02em; }
+.bsg-ship-list { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid var(--bsg-border-sand, #e5e5e5); }
+.bsg-ship-list li { position: relative; padding: 0 0 12px 12px; font-size: 14px; }
+.bsg-ship-list li::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bsg-border-sand, #e5e5e5);
+}
+.bsg-ship-list li:first-child::before { background: var(--bsg-accent-terracotta, #e1261c); }
+.bsg-ship-list li span { display: block; color: var(--bsg-text-secondary, #6b6b6b); font-size: 12.5px; }
+.bsg-ship-wait { margin: 0; color: var(--bsg-text-secondary, #6b6b6b); font-size: 14px; }
+
+/* Track my order page */
+.bsg-track { max-width: 520px; margin: 8px auto 40px; }
+.bsg-track-title { margin: 0 0 4px; font-size: 22px; }
+.bsg-track-meta { margin: 0 0 16px; color: var(--bsg-text-secondary, #6b6b6b); font-size: 14px; }
+.bsg-track-msg {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--bsg-border-sand, #e5e5e5);
+  border-left: 3px solid var(--bsg-accent-terracotta, #e1261c);
+  border-radius: 10px;
+  background: var(--bsg-card-white, #fff);
+  color: var(--bsg-text-charcoal, #111);
+  font-size: 14px;
+}
+.bsg-track-form {
+  padding: 20px;
+  border: 1px solid var(--bsg-border-sand, #e5e5e5);
+  border-radius: 16px;
+  background: var(--bsg-card-white, #fff);
+  color: var(--bsg-text-charcoal, #111);
+}
+.bsg-track-form p { margin: 0 0 14px; }
+.bsg-track-form label { display: block; margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+.bsg-track-form input[type="text"],
+.bsg-track-form input[type="email"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--bsg-border-sand, #e5e5e5);
+  border-radius: 10px;
+  background: var(--bsg-bg-offwhite, #fff);
+  color: var(--bsg-text-charcoal, #111);
+  font-size: 16px;
+}
+.bsg-track-form button {
+  width: 100%;
+  min-height: 50px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bsg-accent-terracotta, #e1261c);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+.bsg-track-hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }
+.bsg-track-alt { margin: 14px 0 0; text-align: center; font-size: 14px; }
+.bsg-track-alt a { color: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }

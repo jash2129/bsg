@@ -1,0 +1,92 @@
+/* ==========================================================================
+   Desktop layout (768px and up). Phones are untouched: every rule here sits
+   inside a min-width query.
+   - One-row header (search | logo | icons) instead of three stacked rows
+   - Fluid page width up to 1480px, with side gutters, instead of a fixed 1200px
+   - Homepage sections, hero and shop grid scale with that width
+   ========================================================================== */
+
+/* Header on a single row. The logo, search and icons all carry explicit
+   columns; without an explicit row the browser dropped the logo onto its own
+   line and pushed the search and icons to a second one. */
+@media (min-width: 768px) {
+  .inside-header > * {
+    grid-row: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --bsg-wrap: 1480px;
+    --bsg-gutter: 40px;
+  }
+
+  /* The parent theme fixes the page at 1200px; make it fluid with gutters. */
+  body .grid-container,
+  body .site.grid-container,
+  body .site-footer .grid-container,
+  body .inside-header.grid-container {
+    max-width: min(var(--bsg-wrap), calc(100% - 2 * var(--bsg-gutter)));
+  }
+
+  /* Homepage: sections fill the container instead of a hard 1160px. */
+  .bsg-section,
+  .related.products,
+  .bsg-recently-viewed-section,
+  .page-template-default #bsg-wishlist-grid.products {
+    max-width: none;
+  }
+
+  .bsg-section {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* A hero no taller than the screen (it was 842px high on a 1160px width). */
+  .bsg-hero-bento {
+    min-height: min(78vh, 760px);
+  }
+
+  .woocommerce-cart .entry-content {
+    max-width: min(1240px, 100%);
+  }
+}
+
+/* Shop grid: 3 across on smaller desktops, 4 once the sidebar and grid both have room
+   (cards stay at least ~225px wide). */
+@media (min-width: 1360px) {
+  .post-type-archive-product ul.products,
+  .tax-product_cat ul.products,
+  .search ul.products {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+/* Small desktops and landscape tablets (768 to 1023): keep a side margin
+   everywhere so nothing touches the screen edge. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bsg-section {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+/* The category pill strip lines up with the page content instead of the screen edge. */
+@media (min-width: 1024px) {
+  .bsg-cat-tabs__scroll {
+    box-sizing: border-box;
+    max-width: min(var(--bsg-wrap), calc(100% - 2 * var(--bsg-gutter)));
+    padding-left: 40px;   /* same inner padding as the header above it */
+    padding-right: 40px;
+  }
+}
+
+/* Landscape tablets and small laptops: two comfortable columns beside the filter sidebar. */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .post-type-archive-product ul.products,
+  .tax-product_cat ul.products,
+  .search ul.products {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

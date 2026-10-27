@@ -1,0 +1,264 @@
+/* ==========================================================================
+   Address book (My Account) and checkout (address picker, order summary)
+   ========================================================================== */
+
+/* ---------- Shared bits ---------- */
+.bsg-addr-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bsg-text-charcoal) 9%, transparent);
+  color: var(--bsg-text-charcoal);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.bsg-addr-tag--home  { background: color-mix(in srgb, var(--bsg-success) 16%, transparent); color: var(--bsg-success); }
+.bsg-addr-tag--work  { background: color-mix(in srgb, #2563eb 16%, transparent); color: #2563eb; }
+
+.bsg-check label,
+label.bsg-check { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; }
+.bsg-check input { width: 18px; height: 18px; }
+
+/* ---------- My Account > Addresses ---------- */
+.bsg-book-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.bsg-book-count { margin: 0; color: var(--bsg-text-secondary); font-size: 13px; }
+.bsg-book-empty { margin: 0 0 16px; color: var(--bsg-text-secondary); }
+
+.bsg-addr-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 22px; }
+
+.bsg-addr-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 16px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+}
+.bsg-addr-card.is-default { border-color: var(--bsg-text-charcoal); }
+.bsg-addr-card header { display: flex; align-items: center; gap: 8px; }
+.bsg-addr-default { font-size: 11px; font-weight: 700; color: var(--bsg-text-secondary); }
+.bsg-addr-name { margin: 0; }
+.bsg-addr-name span { margin-left: 6px; color: var(--bsg-text-secondary); font-size: 13px; }
+.bsg-addr-text { margin: 0; flex: 1; font-size: 14px; line-height: 1.55; color: var(--bsg-text-secondary); }
+.bsg-addr-card footer { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; padding-top: 10px; border-top: 1px solid var(--bsg-border-sand); font-size: 13px; font-weight: 700; }
+.bsg-addr-card footer form { display: contents; }
+.bsg-addr-card footer a,
+.bsg-addr-card footer button {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--bsg-text-charcoal);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.bsg-addr-card footer button[value="delete"] { color: var(--bsg-accent-terracotta); }
+
+.bsg-addr-form { padding: 20px; border: 1px solid var(--bsg-border-sand); border-radius: 16px; background: var(--bsg-card-white); }
+.bsg-addr-form h3 { margin: 0 0 14px; font-size: 18px; color: var(--bsg-text-charcoal); }
+.bsg-addr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.bsg-addr-grid p { margin: 0 0 14px; }
+.bsg-addr-grid p.wide { grid-column: 1 / -1; }
+@media (max-width: 560px) { .bsg-addr-grid { grid-template-columns: 1fr; } }
+
+.bsg-label-pick { display: flex; gap: 8px; margin-bottom: 16px; }
+.bsg-label-pick label { margin: 0; cursor: pointer; }
+.bsg-label-pick input { position: absolute; opacity: 0; pointer-events: none; }
+.bsg-label-pick span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bsg-text-charcoal);
+}
+.bsg-label-pick input:checked + span { background: var(--bsg-text-charcoal); border-color: var(--bsg-text-charcoal); color: var(--bsg-bg-offwhite); }
+.bsg-label-pick input:focus-visible + span { outline: 2px solid var(--bsg-text-charcoal); outline-offset: 3px; }
+
+.bsg-addr-actions { display: flex; align-items: center; gap: 18px; margin-top: 16px; }
+
+.bsg-addr-form input[type="text"],
+.bsg-addr-form input[type="tel"],
+.bsg-addr-form select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 10px;
+  background: var(--bsg-bg-offwhite);
+  color: var(--bsg-text-charcoal);
+  font-size: 16px;
+}
+.bsg-addr-form label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
+
+/* ---------- Checkout: address picker ---------- */
+.bsg-pick { margin: 0 0 18px; }
+.bsg-pick-title { margin: 0 0 12px; font-size: 18px; }
+.bsg-pick-list { display: grid; gap: 10px; }
+
+.bsg-pick-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 14px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.bsg-pick-card input { flex: 0 0 18px; width: 18px; height: 18px; margin-top: 3px; accent-color: var(--bsg-accent-terracotta); }
+.bsg-pick-card.is-on { border-color: var(--bsg-text-charcoal); box-shadow: 0 0 0 1px var(--bsg-text-charcoal); }
+.bsg-pick-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.bsg-pick-top { display: flex; align-items: center; gap: 8px; }
+.bsg-pick-top em { font-size: 11px; font-style: normal; font-weight: 700; color: var(--bsg-text-secondary); }
+.bsg-pick-body small { color: var(--bsg-text-secondary); font-size: 13px; }
+.bsg-pick-text { font-size: 14px; line-height: 1.5; color: var(--bsg-text-secondary); overflow-wrap: anywhere; }
+.bsg-pick-new { align-items: center; }
+
+/* With a saved address chosen, only the email field stays editable here. */
+form.checkout.bsg-saved .woocommerce-billing-fields__field-wrapper > .form-row:not(#billing_email_field) { display: none !important; } /* WooCommerce sets inline display:block on these */
+.bsg-save-addr { display: none; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 4px 0 16px; }
+.bsg-save-as select { min-height: 40px; padding: 0 12px; border: 1px solid var(--bsg-border-sand); border-radius: 10px; background: var(--bsg-bg-offwhite); color: var(--bsg-text-charcoal); }
+
+/* ---------- Checkout: order summary with photos ---------- */
+.woocommerce-checkout-review-order-table { width: 100%; border: 0; border-collapse: collapse; }
+.woocommerce-checkout-review-order-table thead { display: none; }
+.woocommerce-checkout-review-order-table td,
+.woocommerce-checkout-review-order-table th { border: 0; }
+
+/* Each item is one row: photo = 20% (vertical rectangle), details = the rest, price at the far end. */
+.woocommerce-checkout-review-order-table tr.cart_item {
+  display: grid;
+  grid-template-columns: 20% minmax(0, 1fr) auto;
+  column-gap: 12px;
+  align-items: start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--bsg-border-sand);
+}
+.woocommerce-checkout-review-order-table td.product-name { display: contents; }
+.bsg-co-thumb {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bsg-text-charcoal) 6%, transparent);
+}
+.bsg-co-thumb .bsg-co-img,
+.bsg-co-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.bsg-co-name { grid-column: 2; grid-row: 1; font-size: 14px; font-weight: 700; line-height: 1.35; color: var(--bsg-text-charcoal); }
+.woocommerce-checkout-review-order-table td.product-name dl.variation,
+.woocommerce-checkout-review-order-table td.product-name .product-quantity { grid-column: 2; margin: 2px 0 0; font-size: 12.5px; color: var(--bsg-text-secondary); }
+.woocommerce-checkout-review-order-table td.product-name dl.variation { grid-row: 2; display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.woocommerce-checkout-review-order-table td.product-name .product-quantity { grid-row: 3; }
+.woocommerce-checkout-review-order-table td.product-name dl.variation dt,
+.woocommerce-checkout-review-order-table td.product-name dl.variation dd,
+.woocommerce-checkout-review-order-table td.product-name dl.variation p { margin: 0; display: inline; }
+.woocommerce-checkout-review-order-table td.product-total { grid-column: 3; grid-row: 1; padding: 0; font-weight: 700; white-space: nowrap; }
+
+.woocommerce-checkout-review-order-table tfoot tr { display: flex; justify-content: space-between; padding: 8px 0; }
+.woocommerce-checkout-review-order-table tfoot th,
+.woocommerce-checkout-review-order-table tfoot td { padding: 0; font-weight: 600; }
+.woocommerce-checkout-review-order-table tfoot tr.order-total { border-top: 1px solid var(--bsg-border-sand); margin-top: 6px; padding-top: 14px; font-size: 17px; }
+
+/* Place order button and form fields */
+form.checkout input.input-text,
+form.checkout select,
+form.checkout textarea {
+  min-height: 48px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 10px;
+  background: var(--bsg-bg-offwhite);
+  color: var(--bsg-text-charcoal);
+  font-size: 16px;
+}
+form.checkout #place_order {
+  width: 100%;
+  min-height: 54px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bsg-accent-terracotta);
+  color: #fff;
+  font: 700 16px/1 var(--bsg-font-family);
+  letter-spacing: 0.03em;
+}
+
+@media (prefers-reduced-motion: reduce) { .bsg-pick-card { transition: none; } }
+
+/* ---------- Checkout layout ---------- */
+.woocommerce-checkout .woocommerce-billing-fields > h3 { display: none; } /* "Delivery address" above replaces it */
+.woocommerce-checkout #customer_details .col-1,
+.woocommerce-checkout #customer_details .col-2 { float: none; width: 100%; }
+.woocommerce-checkout #order_review_heading { margin: 24px 0 8px; font-size: 18px; }
+.woocommerce-checkout .woocommerce-additional-fields > h3 { font-size: 16px; margin: 8px 0 10px; }
+.woocommerce-checkout #order_review {
+  padding: 18px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 16px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+}
+
+@media (min-width: 960px) {
+  .woocommerce-checkout form.checkout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    column-gap: 40px;
+    align-items: start;
+  }
+  .woocommerce-checkout #customer_details { grid-column: 1; grid-row: 1 / span 2; }
+  .woocommerce-checkout #order_review_heading { grid-column: 2; grid-row: 1; margin-top: 0; }
+  .woocommerce-checkout #order_review { grid-column: 2; grid-row: 2; position: sticky; top: 90px; }
+}
+
+/* Fields: beat WooCommerce's own selectors so they follow the light/dark theme. */
+.woocommerce form.checkout .form-row input.input-text,
+.woocommerce form.checkout .form-row textarea,
+.woocommerce form.checkout .form-row select,
+.woocommerce form.checkout .select2-container .select2-selection--single,
+.woocommerce .bsg-auth-form .form-row input.input-text,
+.woocommerce .bsg-auth-form .form-row input[type="password"] {
+  background: var(--bsg-bg-offwhite);
+  color: var(--bsg-text-charcoal);
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 10px;
+}
+.woocommerce form.checkout .select2-container .select2-selection--single { height: 48px; display: flex; align-items: center; }
+.woocommerce form.checkout .select2-selection__rendered { color: var(--bsg-text-charcoal); line-height: 48px; }
+.woocommerce form.checkout .form-row label { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+
+/* Payment box */
+.woocommerce-checkout #payment { background: transparent; border: 0; padding: 0; }
+.woocommerce-checkout #payment ul.payment_methods { padding: 0; border: 0; list-style: none; display: grid; gap: 8px; }
+.woocommerce-checkout #payment ul.payment_methods li {
+  padding: 12px 14px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 12px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+}
+.woocommerce-checkout #payment div.payment_box { background: transparent; color: var(--bsg-text-secondary); font-size: 13px; margin: 8px 0 0; padding: 0; }
+.woocommerce-checkout #payment div.payment_box::before { display: none; }
+
+/* Card actions are text links, not submit pills (beats the generic account button rule). */
+.woocommerce-MyAccount-content .bsg-addr-card footer button[type="submit"] {
+  min-height: 32px;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--bsg-text-charcoal);
+  font-weight: 700;
+}
+.woocommerce-MyAccount-content .bsg-addr-card footer button[type="submit"][value="delete"] { color: var(--bsg-accent-terracotta); }
+.woocommerce-MyAccount-content .bsg-addr-card footer button[type="submit"]:hover { background: none; }

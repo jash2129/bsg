@@ -1,0 +1,75 @@
+name: Deploy to Hostinger
+
+# Sends ONLY the theme and the India Post plugin to the live site.
+# It never touches the database, uploads (product photos), wp-config.php or other plugins,
+# so deploying cannot wipe anything on the shop.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-live
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_PORT: ${{ secrets.SSH_PORT }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      REMOTE_ROOT: ${{ secrets.REMOTE_ROOT }}
+    steps:
+      - name: Check deployment settings
+        run: |
+          missing=0
+          for v in SSH_HOST SSH_PORT SSH_USER REMOTE_ROOT; do
+            if [ -z "${!v}" ]; then echo "::error::GitHub secret $v is not set"; missing=1; fi
+          done
+          if [ -z "${{ secrets.SSH_KEY }}" ]; then echo "::error::GitHub secret SSH_KEY is not set"; missing=1; fi
+          exit $missing
+
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
+
+      - name: Check PHP files for syntax errors
+        run: |
+          sudo apt-get install -y -qq php-cli >/dev/null
+          fail=0
+          while IFS= read -r -d '' f; do
+            php -l "$f" >/dev/null || { echo "::error file=$f::PHP syntax error"; fail=1; }
+          done < <(find wp-content -name '*.php' -print0)
+          exit $fail
+
+      - name: Deploy theme
+        run: |
+          rsync -az --delete --exclude='.git' \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=yes" \
+            wp-content/themes/bsg-minimal-child/ \
+            "$SSH_USER@$SSH_HOST:$REMOTE_ROOT/wp-content/themes/bsg-minimal-child/"
+
+      - name: Deploy India Post plugin
+        run: |
+          rsync -az --delete --exclude='.git' \
+            -e "ssh -i ~/.ssh/deploy_key -p $SSH_PORT -o StrictHostKeyChecking=yes" \
+            wp-content/plugins/bsg-india-post/ \
+            "$SSH_USER@$SSH_HOST:$REMOTE_ROOT/wp-content/plugins/bsg-india-post/"
+
+      - name: Clear caches (best effort)
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            "cd '$REMOTE_ROOT' && (wp cache flush --skip-plugins --skip-themes || true)" || true
+
+      - name: Remove the key from the runner
+        if: always()
+        run: rm -f ~/.ssh/deploy_key

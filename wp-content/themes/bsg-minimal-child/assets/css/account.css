@@ -1,0 +1,438 @@
+/* ==========================================================================
+   Account: sign in / create account, My Account overview, address forms
+   ========================================================================== */
+
+/* ---------- Sign in / Create account card ---------- */
+.bsg-auth-head {
+  margin: 0 0 18px;
+}
+
+.bsg-auth-banner {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--bsg-border-sand);
+  border-left: 3px solid var(--bsg-accent-terracotta);
+  border-radius: 10px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.bsg-auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bsg-text-charcoal) 7%, transparent);
+}
+
+.bsg-auth-tabs button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bsg-text-secondary);
+  font: 600 14px/1 var(--bsg-font-family);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.bsg-auth-tabs button[aria-selected="true"] {
+  background: var(--bsg-text-charcoal);
+  color: var(--bsg-bg-offwhite);
+}
+
+/* With JS, only the chosen pane shows; without it both stack as before. */
+.bsg-auth-form .u-columns.bsg-auth-js .u-column2 { display: none; margin-top: 0; }
+.bsg-auth-form .u-columns.bsg-auth-js.is-register .u-column1 { display: none; }
+.bsg-auth-form .u-columns.bsg-auth-js.is-register .u-column2 { display: block; }
+
+.bsg-auth-form form.woocommerce-form-login,
+.bsg-auth-form form.woocommerce-form-register {
+  margin: 0;
+  padding: 22px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 16px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+}
+
+.bsg-auth-form .woocommerce-form-row,
+.bsg-auth-form .form-row {
+  float: none;
+  width: 100%;
+  margin: 0 0 14px;
+}
+
+.bsg-auth-form label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bsg-text-charcoal);
+}
+
+.bsg-auth-form input.input-text,
+.bsg-auth-form input[type="text"],
+.bsg-auth-form input[type="email"],
+.bsg-auth-form input[type="tel"],
+.bsg-auth-form input[type="password"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 10px;
+  background: var(--bsg-bg-offwhite);
+  color: var(--bsg-text-charcoal);
+  font-size: 16px; /* stops iOS zooming on focus */
+}
+
+.bsg-auth-form input:focus {
+  border-color: var(--bsg-text-charcoal);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bsg-text-charcoal) 14%, transparent);
+}
+
+.bsg-auth-form button.woocommerce-button,
+.bsg-auth-form button[name="login"],
+.bsg-auth-form button[name="register"] {
+  width: 100%;
+  min-height: 50px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bsg-accent-terracotta);
+  color: #fff;
+  font: 700 15px/1 var(--bsg-font-family);
+  letter-spacing: 0.03em;
+  cursor: pointer;
+}
+
+.bsg-auth-form .woocommerce-form-login__rememberme {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 14px;
+  font-weight: 500;
+}
+
+.bsg-auth-form .woocommerce-LostPassword {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+.bsg-auth-note,
+.bsg-auth-form .woocommerce-privacy-policy-text p {
+  margin: 0 0 14px;
+  color: var(--bsg-text-secondary);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.bsg-auth-perks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bsg-auth-perks li {
+  padding: 12px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--bsg-text-secondary);
+}
+
+.bsg-auth-perks strong {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 13px;
+  color: var(--bsg-text-charcoal);
+}
+
+@media (max-width: 600px) {
+  .bsg-auth-perks { grid-template-columns: 1fr; }
+  .bsg-auth-perks li { display: flex; gap: 8px; align-items: baseline; }
+  .bsg-auth-perks strong { display: inline; margin: 0; white-space: nowrap; }
+  .bsg-auth-form form.woocommerce-form-login,
+  .bsg-auth-form form.woocommerce-form-register { padding: 16px; }
+}
+
+/* The leaning-card effect is for the old two-card layout; the tabbed card stays still. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .woocommerce-account:not(.logged-in) .bsg-auth-form form.woocommerce-form-login {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* ---------- My Account (signed in) ---------- */
+.woocommerce-account.logged-in .woocommerce {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.woocommerce-account.logged-in .woocommerce-MyAccount-navigation,
+.woocommerce-account.logged-in .woocommerce-MyAccount-content {
+  float: none;
+  width: 100%;
+}
+
+.woocommerce-MyAccount-navigation ul {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 16px;
+  background: var(--bsg-card-white);
+}
+
+.woocommerce-MyAccount-navigation li {
+  margin: 0;
+}
+
+.woocommerce-MyAccount-navigation a {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 10px;
+  color: var(--bsg-text-secondary);
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.woocommerce-MyAccount-navigation a:hover {
+  background: color-mix(in srgb, var(--bsg-text-charcoal) 6%, transparent);
+  color: var(--bsg-text-charcoal);
+}
+
+.woocommerce-MyAccount-navigation .is-active a {
+  background: var(--bsg-text-charcoal);
+  color: var(--bsg-bg-offwhite);
+}
+
+.woocommerce-MyAccount-navigation .woocommerce-MyAccount-navigation-link--customer-logout a {
+  color: var(--bsg-accent-terracotta);
+}
+
+@media (max-width: 800px) {
+  .woocommerce-account.logged-in .woocommerce { grid-template-columns: 1fr; gap: 18px; }
+  /* Menu becomes a swipeable pill row. */
+  .woocommerce-MyAccount-navigation ul {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 6px;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .woocommerce-MyAccount-navigation ul::-webkit-scrollbar { display: none; }
+  .woocommerce-MyAccount-navigation li { flex: 0 0 auto; scroll-snap-align: start; }
+  .woocommerce-MyAccount-navigation a { white-space: nowrap; border-radius: 999px; }
+}
+
+/* ---------- Overview ---------- */
+.bsg-dash { display: grid; gap: 14px; }
+
+.bsg-dash-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 18px;
+  background: var(--bsg-ink);
+  color: #F2F0EC;
+}
+
+.bsg-dash-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bsg-accent-terracotta);
+  color: #fff;
+  font: 800 24px/1 var(--bsg-font-family);
+}
+
+.bsg-dash-eyebrow { margin: 0; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
+.bsg-dash-name { margin: 2px 0; color: inherit; font-size: 26px; line-height: 1.15; }
+.bsg-dash-meta { margin: 0; font-size: 13px; opacity: 0.75; overflow-wrap: anywhere; }
+
+.bsg-dash-card {
+  padding: 18px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 16px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+}
+
+.bsg-dash-card h3 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bsg-text-secondary);
+}
+
+.bsg-dash-card p { margin: 0 0 10px; }
+.bsg-dash-card address { margin: 0 0 8px; font-style: normal; line-height: 1.55; }
+.bsg-dash-sub { color: var(--bsg-text-secondary); font-size: 14px; }
+
+.bsg-dash-complete { border-color: var(--bsg-accent-terracotta); }
+.bsg-dash-complete-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.bsg-meter { height: 8px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--bsg-text-charcoal) 10%, transparent); }
+.bsg-meter i { display: block; height: 100%; border-radius: inherit; background: var(--bsg-accent-terracotta); }
+.bsg-dash-complete p { margin-top: 12px; font-size: 14px; color: var(--bsg-text-secondary); }
+
+.bsg-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 640px) { .bsg-dash-grid { grid-template-columns: 1fr; } }
+
+.bsg-dash-order-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.bsg-status {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bsg-text-charcoal) 8%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+}
+.bsg-status--completed { background: color-mix(in srgb, var(--bsg-success) 18%, transparent); color: var(--bsg-success); }
+.bsg-status--processing, .bsg-status--on-hold { background: color-mix(in srgb, var(--bsg-accent-terracotta) 14%, transparent); color: var(--bsg-accent-terracotta); }
+
+.bsg-link { font-weight: 700; font-size: 14px; color: var(--bsg-text-charcoal); text-decoration: underline; text-underline-offset: 3px; }
+
+.bsg-btn-solid {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--bsg-accent-terracotta);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.bsg-dash-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.bsg-dash-tiles a {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 14px;
+  color: var(--bsg-text-charcoal);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.bsg-dash-tiles a:hover { border-color: var(--bsg-text-charcoal); transform: translateY(-2px); }
+.bsg-dash-tiles strong { font-size: 20px; }
+.bsg-dash-tiles span { font-size: 13px; color: var(--bsg-text-secondary); }
+
+/* ---------- Address and profile forms inside My Account ---------- */
+.woocommerce-MyAccount-content form .form-row { margin-bottom: 14px; }
+.woocommerce-MyAccount-content label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
+.woocommerce-MyAccount-content input.input-text,
+.woocommerce-MyAccount-content select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 10px;
+  background: var(--bsg-bg-offwhite);
+  color: var(--bsg-text-charcoal);
+  font-size: 16px;
+}
+.woocommerce-MyAccount-content button[type="submit"] {
+  min-height: 48px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bsg-accent-terracotta);
+  color: #fff;
+  font-weight: 700;
+}
+.woocommerce-MyAccount-content h2,
+.woocommerce-MyAccount-content h3 { color: var(--bsg-text-charcoal); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bsg-dash-tiles a, .bsg-auth-tabs button { transition: none; }
+  .bsg-dash-tiles a:hover { transform: none; }
+}
+
+/* Layout fixes: WooCommerce's clearfix pseudo-elements would take grid cells. */
+.woocommerce-account.logged-in .woocommerce::before,
+.woocommerce-account.logged-in .woocommerce::after { display: none; }
+.woocommerce-account.logged-in .woocommerce-MyAccount-navigation { grid-column: 1; }
+.woocommerce-account.logged-in .woocommerce-MyAccount-content { grid-column: 2; min-width: 0; }
+.woocommerce-account.logged-in .entry-content { max-width: 1040px; }
+.woocommerce-account.logged-in .woocommerce-account-gravatar { display: none; } /* the overview has its own greeting */
+@media (max-width: 800px) {
+  .woocommerce-account.logged-in .woocommerce-MyAccount-content { grid-column: 1; }
+}
+
+.bsg-dash-card address { font-size: 15px; font-weight: 500; }
+.bsg-dash-hero > div { min-width: 0; }
+
+/* ---------- Password reset ---------- */
+.bsg-reset { max-width: 460px; margin: 8px auto 40px; }
+.bsg-reset > p:first-child { margin: 0 0 16px; color: var(--bsg-text-secondary); font-size: 15px; line-height: 1.55; }
+.bsg-reset form.lost_reset_password {
+  margin: 0;
+  padding: 22px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 16px;
+  background: var(--bsg-card-white);
+  color: var(--bsg-text-charcoal);
+}
+.bsg-reset form .form-row { float: none; width: 100%; margin: 0 0 14px; }
+.bsg-reset label { display: block; margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+.bsg-reset input.input-text,
+.bsg-reset input[type="password"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--bsg-border-sand);
+  border-radius: 10px;
+  background: var(--bsg-bg-offwhite);
+  color: var(--bsg-text-charcoal);
+  font-size: 16px;
+}
+.bsg-reset button.woocommerce-Button,
+.bsg-reset button[type="submit"] {
+  width: 100%;
+  min-height: 50px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bsg-accent-terracotta);
+  color: #fff;
+  font: 700 15px/1 var(--bsg-font-family);
+  letter-spacing: 0.03em;
+  text-transform: none;
+  cursor: pointer;
+}
+.bsg-reset-back { margin: 16px 0 0; text-align: center; font-size: 14px; }
+.bsg-reset-back a { color: var(--bsg-text-charcoal); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+
+.woocommerce .bsg-reset form .password-input input,
+.woocommerce .bsg-reset form .form-row input.input-text {
+  background: var(--bsg-bg-offwhite);
+  color: var(--bsg-text-charcoal);
+  border: 1px solid var(--bsg-border-sand);
+}
+.woocommerce .bsg-reset .show-password-input { color: var(--bsg-text-secondary); }

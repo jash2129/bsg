@@ -1,0 +1,16 @@
+# Never commit these
+wp-config.php
+.env
+*.sql
+*.zip
+*.log
+*.pem
+*.key
+bsg_deploy
+bsg_deploy.pub
+wp-content/uploads/
+wp-content/database/
+wp-content/debug.log
+node_modules/
+.DS_Store
+Thumbs.db
